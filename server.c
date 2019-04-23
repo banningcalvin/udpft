@@ -5,8 +5,6 @@
 #include <string.h>
 #include <unistd.h>
 
-
-
 #define SEGSIZE 255   /* Maximum data segment size */
 
 void DieWithError(char *errorMessage); /* Error handling function */

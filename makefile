@@ -17,4 +17,4 @@ server.o: server.c
 	$(CC) $(CFLAGS) -c server.c
 
 clean:
-	rm -f *.o *~ client server ClientFiles/*
+	rm -f *.o *~ client server ClientFiles/* core

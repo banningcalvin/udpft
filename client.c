@@ -5,8 +5,6 @@
 #include <string.h>
 #include <unistd.h>
 
-
-
 #define SEGSIZE 255 /* Maximum data segment size */
 
 void DieWithError(char *errorMessage); /* Error handling function */
@@ -22,7 +20,7 @@ int main(int argc, char *argv[])
   unsigned int fromSize;
   char *servIP;
   char buffer[SEGSIZE+1];
-  char *fileName = "example.txt";
+  char *fileName;
   unsigned int fileNameLen;
   int respStringLen;
 
@@ -32,7 +30,9 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  printf("Starting client.\n");
+  printf("Starting client.\nInput file name:");
+  scanf("%[^\n]%*c", fileName);
+  printf("%s", fileName);
   servIP = argv[1];
   servPort = atoi(argv[2]);
   
