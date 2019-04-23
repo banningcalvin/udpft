@@ -1,20 +1,20 @@
 CC=gcc
 CFLAGS=-Wall
 
-all: UDPEchoClient UDPEchoServer
+all: client server
 
-UDPEchoClient: UDPEchoClient.o DieWithError.o 
+client: client.o DieWithError.o 
 
-UDPEchoServer: UDPEchoServer.o DieWithError.o 
+server: server.o DieWithError.o 
 
 DieWithError.o: DieWithError.c
 	$(CC) $(CFLAGS) -c DieWithError.c
 
-UDPEchoClient.o: UDPEchoClient.c
-	$(CC) $(CFLAGS) -c UDPEchoClient.c
+client.o: client.c
+	$(CC) $(CFLAGS) -c client.c
 
-UDPEchoSever.o: UDPEchoSever.c 
-	$(CC) $(CFLAGS) -c UDPEchoSever.c
+server.o: server.c
+	$(CC) $(CFLAGS) -c server.c
 
 clean:
-	rm -f *.o *~ UDPEchoClient UDPEchoServer ClientFiles/*
+	rm -f *.o *~ client server ClientFiles/*
