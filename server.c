@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
   /* Create socket for incoming connections */
   if((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
-    DieWithError("socket () failed");
+    DieWithError("socket() failed");
 
   /* Construct local address structure */
   memset(&servAddr, 0, sizeof(servAddr)); /* Zero out structure */
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
   /* Bind to the local address */
   if (bind(sock, (struct sockaddr *)&servAddr, sizeof(servAddr)) < 0)
-    DieWithError ( "bind () failed");
+    DieWithError ( "bind() failed");
 
 
   for (;;) /* Run forever */
