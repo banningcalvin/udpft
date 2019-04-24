@@ -30,15 +30,15 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  printf("Starting client.\nInput file name:");
+  /* start by asking for the filename */
+  printf("Starting client.\nInput file name: ");
+  fileName = malloc(sizeof(char)*(SEGSIZE+1));
   scanf("%[^\n]%*c", fileName);
-  printf("%s", fileName);
+  fileNameLen = strlen(fileName);
+
   servIP = argv[1];
   servPort = atoi(argv[2]);
   
-  if((fileNameLen = strlen(fileName)) > SEGSIZE) /* Check input length */
-    DieWithError("Filename too long");
-
   /* Create a datagram/UDP socket */
   if((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP))<0)
     DieWithError("socket() failed");
