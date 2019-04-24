@@ -7,7 +7,15 @@
 
 #define SEGSIZE 255 /* Maximum data segment size */
 
+
+
 void DieWithError(char *errorMessage); /* Error handling function */
+
+/* Sets fileName */
+void setFileName(char *fileName) {
+  printf("Input file name: ");
+  scanf("%[^\n]%*c", fileName); 
+}
 
 
 
@@ -21,7 +29,6 @@ int main(int argc, char *argv[])
   char *servIP;
   char buffer[SEGSIZE+1];
   char *fileName;
-  unsigned int fileNameLen;
   int respStringLen;
 
   /* Test for correct number of arguments */
@@ -30,33 +37,36 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  /* start by asking for the filename */
-  printf("Starting client.\nInput file name: ");
+  printf("Starting client.\n");
   fileName = malloc(sizeof(char)*(SEGSIZE+1));
-  scanf("%[^\n]%*c", fileName);
-  fileNameLen = strlen(fileName);
 
-  servIP = argv[1];
-  servPort = atoi(argv[2]);
+  /* start by asking for the filename */
+  setFileName(fileName);
   
   /* Create a datagram/UDP socket */
+  servIP = argv[1];
+  servPort = atoi(argv[2]);
   if((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP))<0)
     DieWithError("socket() failed");
-
+  
   /*Construct the server address structure*/
   memset(&servAddr, 0, sizeof(servAddr)); /* Zero out structure */
   servAddr.sin_family = AF_INET;   /* Internet addr family */
   servAddr.sin_addr.s_addr = inet_addr(servIP);   /* Server IP address */
   servAddr.sin_port = htons(servPort);  /* Server port */
 
-
   /*send the string to the server*/
-  if(sendto(sock, fileName, fileNameLen, 0, (struct sockaddr *)&servAddr, sizeof(servAddr))!=fileNameLen)
+  if(sendto(sock, fileName, strlen(fileName), 0, (struct sockaddr *)&servAddr, sizeof(servAddr)) != strlen(fileName))
     DieWithError("send() sent a different number of bytes than expected");
+  else
+    printf("File '%s' requested from %s:%d\n", fileName, servIP, servPort);
 
+
+
+  
   /*Receive a response*/
   fromSize = sizeof(fromAddr);
-  if((respStringLen = recvfrom(sock, buffer, SEGSIZE, 0, (struct sockaddr *) &fromAddr, &fromSize)) != fileNameLen)
+  if((respStringLen = recvfrom(sock, buffer, SEGSIZE, 0, (struct sockaddr *) &fromAddr, &fromSize)) != strlen(fileName))
     DieWithError("recvfrom() failed") ;
 
   if(servAddr.sin_addr.s_addr != fromAddr.sin_addr.s_addr) {
@@ -68,6 +78,9 @@ int main(int argc, char *argv[])
   /* null-terminate the received data */
   buffer[respStringLen] = '\0' ;
   printf("Received: %s\n", buffer); /* Print the echoed arg */
+
+  printf("Closing client.\n");
   close(sock);
+  free(fileName);
   exit(0);
 }

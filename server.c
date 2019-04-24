@@ -27,6 +27,8 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
+  printf("Starting server.\n");
+  
   servPort = atoi(argv[1]); /* First arg: local port */
 
   /* Create socket for incoming connections */
