@@ -10,6 +10,7 @@
 
 
 void DieWithError(char *errorMessage); /* Error handling function */
+unsigned int calculateChecksum(char* path); /* Checksum calculator */
 
 /* Sets fileName */
 void setFileName(char *fileName) {
@@ -36,6 +37,8 @@ int main(int argc, char *argv[])
   char *buffer;
   char *fileName;
   FILE* file;
+  unsigned int servChecksum;
+  unsigned int clntChecksum;
 
   /* Test for correct number of arguments */
   if(argc != 3) {
@@ -82,12 +85,15 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
+
+  
   if(strcmp("200 - FILE FOUND", buffer) == 0) {
     printf("Received: %s\n", buffer); /* Print the echoed arg */
 
     /* opening file to write, and recv and write messages into the buffer, then to the file */
     printf("Download beginning. Opening file.\n");
     file = fopen("./ClientFiles/download.txt","w");
+    
     for(;;) {
       blankBuffer(buffer, SEGSIZE+1);
       recvfrom(sock, buffer, SEGSIZE, 0, (struct sockaddr *) &fromAddr, &fromSize);
@@ -95,8 +101,19 @@ int main(int argc, char *argv[])
       if(buffer[SEGSIZE - 1] == '\0') /* This segment had null bytes, EOF was reached */
 	break;
     }
+    
     printf("Download finished. Closing file. See ./ClientFiles/download.txt\n");
     fclose(file);
+    printf("Preparing to validate file with checksum.\n");
+    recvfrom(sock, &servChecksum, sizeof(unsigned int), 0, (struct sockaddr *) &fromAddr, &fromSize);
+    clntChecksum = calculateChecksum("./ClientFiles/download.txt");
+    printf("server checksum: %u\n", servChecksum);
+    printf("client checksum: %u\n", clntChecksum);
+    if(servChecksum == clntChecksum)
+      printf("Checksums match.\n");
+    else
+      printf("Checksums differ. Something went wrong.\n");
+
     
   } else {
     printf("Received: %s\n", buffer); /* Print the echoed arg */

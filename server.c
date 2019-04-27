@@ -10,6 +10,7 @@
 
 
 void DieWithError(char *errorMessage); /* Error handling function */
+unsigned int calculateChecksum(char* path); /* Checksum calculator */
 
 /* makes len indices of char* b null terminators. Used to blank strings */
 void blankBuffer(char* buffer, int len) {
@@ -46,6 +47,7 @@ int main(int argc, char *argv[])
   unsigned short servPort; /* Server port */
   int recvMsgSize; /* Size of received message */
   FILE* file;
+  unsigned int checksum;
   
   /* Test for correct number of arguments */
   if(argc != 2) {
@@ -120,6 +122,11 @@ int main(int argc, char *argv[])
 	  }
 
 	fclose(file);
+
+	printf("Getting ready to send checksum\n");
+	checksum = calculateChecksum(filePath);
+	sendto(sock, &checksum, sizeof(unsigned int), 0, (struct sockaddr *) &clntAddr, sizeof(clntAddr));
+	
       }
     } else {
       /* The file does not exist or is not readable */
