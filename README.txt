@@ -15,7 +15,8 @@ makefile - makefile.
 	        The two files are:
 		example.txt - small one-line file.
 		constitution.txt - U.S. Constitution, large text file.
-
+/.git/ - git folder
+.gitignore - git ignore file
 ==========================
 =COMPILATION INSTRUCTIONS=
 ==========================
