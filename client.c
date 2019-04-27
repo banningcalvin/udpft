@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
   unsigned short servPort;
   unsigned int fromSize;
   char *servIP;
-  char buffer[SEGSIZE];
+  char *buffer;
   char *fileName;
   FILE* file;
 
@@ -45,7 +45,8 @@ int main(int argc, char *argv[])
 
   printf("Starting client.\n");
   fileName = malloc(sizeof(char)*(SEGSIZE+1));
-
+  buffer = malloc(sizeof(char)*(SEGSIZE+1));
+  
   /* Create a datagram/UDP socket */
   servIP = argv[1];
   servPort = atoi(argv[2]);
@@ -88,7 +89,7 @@ int main(int argc, char *argv[])
     printf("Download beginning. Opening file.\n");
     file = fopen("./ClientFiles/download.txt","w");
     for(;;) {
-      blankBuffer(buffer, SEGSIZE);
+      blankBuffer(buffer, SEGSIZE+1);
       recvfrom(sock, buffer, SEGSIZE, 0, (struct sockaddr *) &fromAddr, &fromSize);
       fputs(buffer,file);
       if(buffer[SEGSIZE - 1] == '\0') /* This segment had null bytes, EOF was reached */
@@ -107,5 +108,6 @@ int main(int argc, char *argv[])
   printf("Closing client.\n");
   close(sock);
   free(fileName);
+  free(buffer);
   exit(0);
 }
