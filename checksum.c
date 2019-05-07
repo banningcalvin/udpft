@@ -1,3 +1,7 @@
+/* This file calculates a file's checksum. A string specifying the path is
+ * passed in, and an unsigned int representing the sum of bytes is returned
+ */
+
 #include <stdio.h>
 
 unsigned int calculateChecksum(char* path) {

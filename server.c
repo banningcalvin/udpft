@@ -1,3 +1,11 @@
+/* This file contains the source code for the server. It receives a file
+ * name from a client. If found, it notifies the client and then begins sending
+ * the data to the client. It then sends a checksum for validation. If not
+ * found, it notifies the client. If not found, it notifies the client.
+ * Unlike the client, the server does not need to be restarted for every
+ * file. 
+ */
+
 #include <stdio.h> /*for printf() and fprintf()*/
 #include <sys/socket.h> /*for socket(), connect(), send(), and recv()*/
 #include <arpa/inet.h> /*for sockaddr_in and inet_addr()*/
@@ -34,7 +42,12 @@ int prepBuffer(FILE* file, char* buffer, int len) {
   return 0;
 }
 
-
+/* function used to determine if a packet should have simulated biterrors */
+/* returns 1 if a packet should have simulated biterrors */
+/* returns 0 if a packet should not have simulated biterrors */
+int hasError(float p) {
+  return (p > (((float)rand()) / ((float)RAND_MAX)));
+}
 
 int main(int argc, char *argv[])
 {
@@ -46,19 +59,27 @@ int main(int argc, char *argv[])
   char filePath[SEGSIZE]; /* Buffer for filePath */
   unsigned short servPort; /* Server port */
   int recvMsgSize; /* Size of received message */
-  FILE* file;
-  unsigned int checksum;
+  FILE* file; /* pointer to requested file */
+  unsigned int checksum; /* sum of bytes of entire file. used for final validation  */
+  float probability; /* probability for biterror */
+  int EOFreached; /* 1 if EOF reached, 0 if not reached */
+  int windowSize; /* window size, set by sender */
   
   /* Test for correct number of arguments */
-  if(argc != 2) {
-    fprintf(stderr, "Usage: %s <Server Port>\n", argv[0]) ;
+  if(argc != 3) {
+    fprintf(stderr, "Usage: %s <Server Port> <Biterror Probability>\n", argv[0]) ;
     exit(1);
   }
 
-  printf("Starting server.\n");
   
-  servPort = atoi(argv[1]); /* First arg: local port */
 
+  printf("Starting server.\n");
+  servPort = atoi(argv[1]); /* First arg: local port */
+  probability = atof(argv[2]); /* Second arg: error probability */
+  printf("Server Port: %d\n", servPort);
+  printf("Bit Error Probability: %f\n", servPort);
+
+  
   /* Create socket for incoming connections */
   if((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
     DieWithError("socket() failed");
@@ -106,21 +127,26 @@ int main(int argc, char *argv[])
 	file = fopen(filePath, "r");
 	
 	printf("'%s' opened. Preparing to buffer and send.\n", filePath);
+
+
 	
-	/* File transfer */
-	for(;;)
+	/* File transfer until break*/
+	EOFreached = 0;
+	while(!EOFreached)
 	  {
 	    blankBuffer(buffer, SEGSIZE);
 
 	    /* EOF reached. Send and break */
 	    if(prepBuffer(file, buffer, SEGSIZE)) {
 	      sendto(sock, buffer, SEGSIZE, 0, (struct sockaddr *) &clntAddr, sizeof(clntAddr));
-	      break;
+	      EOFreached = 1;
 	    } else { /* send data as normal */
 	      sendto(sock, buffer, SEGSIZE, 0, (struct sockaddr *) &clntAddr, sizeof(clntAddr));
 	    }
 	  }
 
+
+	
 	fclose(file);
 
 	printf("Getting ready to send checksum\n");

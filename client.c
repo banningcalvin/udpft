@@ -1,3 +1,8 @@
+/* This file contains the source code for the client. It sends a file
+ * request to the server. If not found, it exits. If it is, it downloads
+ * the file, validates it with a checksum, and exits.
+ */
+
 #include <stdio.h> /*for printf() and fprintf()*/
 #include <sys/socket.h> /*for socket(), connect(), send(), and recv()*/
 #include <arpa/inet.h> /*for sockaddr_in and inet_addr()*/
@@ -39,10 +44,11 @@ int main(int argc, char *argv[])
   FILE* file;
   unsigned int servChecksum;
   unsigned int clntChecksum;
-
+  int windowSize;
+  
   /* Test for correct number of arguments */
-  if(argc != 3) {
-    fprintf(stderr, "Usage: %s <Server IP> <Server Port>\n", argv[0]);
+  if(argc != 4) {
+    fprintf(stderr, "Usage: %s <Server IP> <Server Port> <Window Size>\n", argv[0]);
     exit(1);
   }
 
@@ -53,6 +59,11 @@ int main(int argc, char *argv[])
   /* Create a datagram/UDP socket */
   servIP = argv[1];
   servPort = atoi(argv[2]);
+  windowSize = atoi(argv[3]);
+  printf("Target IP: %s\n", servIP);
+  printf("Target Port: %d\n", servPort);
+  printf("Window Size: %d\n", windowSize);
+  
   if((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP))<0)
     DieWithError("socket() failed");
   
