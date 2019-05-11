@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
   servPort = atoi(argv[1]); /* First arg: local port */
   probability = atof(argv[2]); /* Second arg: error probability */
   printf("Server Port: %d\n", servPort);
-  printf("Bit Error Probability: %f\n", servPort);
+  printf("Bit Error Probability: %f\n", probability);
 
   
   /* Create socket for incoming connections */
