@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   unsigned int servChecksum;
   unsigned int clntChecksum;
   int windowSize;
-  
+
   /* Test for correct number of arguments */
   if(argc != 4) {
     fprintf(stderr, "Usage: %s <Server IP> <Server Port> <Window Size>\n", argv[0]);
