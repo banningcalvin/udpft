@@ -20,7 +20,7 @@ unsigned int calculateChecksum(char* path); /* Checksum calculator */
 /* Sets fileName */
 void setFileName(char *fileName) {
   printf("Input file name: ");
-  scanf("%[^\n]%*c", fileName); 
+  scanf("%[^\n]%*c", fileName);
 }
 
 /* makes len indices of char* b null terminators. Used to blank strings */
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
   printf("Starting client.\n");
   fileName = malloc(sizeof(char)*(SEGSIZE+1));
   buffer = malloc(sizeof(char)*(SEGSIZE+1));
-  
+
   /* Create a datagram/UDP socket */
   servIP = argv[1];
   servPort = atoi(argv[2]);
@@ -63,10 +63,10 @@ int main(int argc, char *argv[])
   printf("Target IP: %s\n", servIP);
   printf("Target Port: %d\n", servPort);
   printf("Window Size: %d\n", windowSize);
-  
+
   if((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP))<0)
     DieWithError("socket() failed");
-  
+
   /*Construct the server address structure*/
   memset(&servAddr, 0, sizeof(servAddr)); /* Zero out structure */
   servAddr.sin_family = AF_INET;   /* Internet addr family */
@@ -75,10 +75,9 @@ int main(int argc, char *argv[])
 
 
 
-  
   /* start by asking for the filename */
   setFileName(fileName);
-  
+
   /*send the string to the server*/
   if(sendto(sock, fileName, strlen(fileName), 0, (struct sockaddr *)&servAddr, sizeof(servAddr)) != strlen(fileName))
     DieWithError("send() sent a different number of bytes than expected");
@@ -97,22 +96,28 @@ int main(int argc, char *argv[])
   }
 
 
-  
+
   if(strcmp("200 - FILE FOUND", buffer) == 0) {
     printf("Received: %s\n", buffer); /* Print the echoed arg */
 
+    /* send window size to server */
+    printf("Sending window size to server\n");
+    if(sendto(sock, fileName, strlen(fileName), 0, (struct sockaddr *)&servAddr, sizeof(servAddr)) != strlen(fileName))
+      DieWithError("send() sent a different number of bytes than expected");
+    printf("Window size sent.\n");
+
     /* opening file to write, and recv and write messages into the buffer, then to the file */
-    printf("Download beginning. Opening file.\n");
+    printf("Download beginning. Opening file for writing.\n");
     file = fopen("./ClientFiles/download.txt","w");
-    
+
     for(;;) {
       blankBuffer(buffer, SEGSIZE+1);
       recvfrom(sock, buffer, SEGSIZE, 0, (struct sockaddr *) &fromAddr, &fromSize);
       fputs(buffer,file);
       if(buffer[SEGSIZE - 1] == '\0') /* This segment had null bytes, EOF was reached */
-	break;
+        break;
     }
-    
+
     printf("Download finished. Closing file. See ./ClientFiles/download.txt\n");
     fclose(file);
     printf("Preparing to validate file with checksum.\n");
@@ -125,13 +130,12 @@ int main(int argc, char *argv[])
     else
       printf("Checksums differ. Something went wrong.\n");
 
-    
+
   } else {
     printf("Received: %s\n", buffer); /* Print the echoed arg */
   }
 
-  
-  
+
 
   printf("Closing client.\n");
   close(sock);
