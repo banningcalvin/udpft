@@ -9,14 +9,15 @@ DieWithError.c - runs perror and exits with error code.
 server.c - server source code file.
 client.c - client source code file.
 makefile - makefile.
-/ClientFiles/ - Subdirectory for holding the downloaded file.
+ClientFiles/ - Subdirectory for holding the downloaded file.
 	        The file is named download.txt.
-/ServerFiles/ - Subdirectory for files to be uploaded by the server.
+ServerFiles/ - Subdirectory for files to be uploaded by the server.
 	        The two files are:
 		example.txt - small one-line file.
 		constitution.txt - U.S. Constitution, large text file.
-/.git/ - git folder
+.git/ - git folder
 .gitignore - git ignore file
+
 ==========================
 =COMPILATION INSTRUCTIONS=
 ==========================
@@ -44,12 +45,21 @@ None.
 2) cd into the folder in each terminal.
 3) run 'make' in one terminal, which defaults to make all, which will make both
    the server and the client.
-4) In one terminal, run ./server 8080
-   In the other terminal, run ./client 127.0.0.1 8080
-   In some cases, port 8080 will be in use, so you might want to try another
+4) In one terminal, run:
+        ./server 8080 .1
+        The arguments are the port and the biterror probability
+   In the other terminal, run:
+        ./client 127.0.0.1 8080 1
+        The arguments are the server IP, the port, and the window size 
+   In some cases, port 8080 will be in use, so you might want to try another.
+   Counting up from 8080 usually finds an open port pretty soon.
    Make sure the server has started before you request a file with the client.
 5) The client will ask you for a file. Type in 'example.txt' or
    'constitution.txt' (without the quotes) two download one of the two files.
+   You must restart the client for every download, and every download will
+   overwrite "download.txt". This is intentional, to allow for different window
+   sizes without having to restart the server. Sending "EXIT" as the filename
+   will cause both the client and server to exit.
 6) The file will download to ./ClientFiles/download.txt. A checksum is sent
    by the server which validates the file. You can also use the diff program
    to prove that download.txt is the same as the file which you requested from
