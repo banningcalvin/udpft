@@ -15,8 +15,9 @@
 
 #define SEGSIZE 255 /* Maximum data segment size */
 
-void DieWithError(char *errorMessage);      /* Error handling function */
-unsigned int calculateChecksum(char *path); /* Checksum calculator */
+void DieWithError(char *errorMessage);              /* Error handling function */
+unsigned int calculateChecksum(char *path);         /* Checksum calculator */
+unsigned int calculateStringChecksum(char *buffer); /* String checksum calculator */
 
 /* makes len indices of char* b null terminators. Used to blank strings */
 void blankBuffer(char *buffer, int len)
@@ -69,6 +70,8 @@ int main(int argc, char *argv[])
     float probability;           /* probability for biterror */
     int EOFreached;              /* 1 if EOF reached, 0 if not reached */
     unsigned int windowSize;     /* window size, set by sender */
+    unsigned int seq;            /* sequence number of current packet */
+    unsigned int ack;            /* ack number */
 
     /* Test for correct number of arguments */
     if (argc != 3)
@@ -139,6 +142,7 @@ int main(int argc, char *argv[])
                 EOFreached = 0;
                 while (!EOFreached)
                 {
+
                     blankBuffer(buffer, SEGSIZE);
 
                     /* EOF reached. Send and break */
