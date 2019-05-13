@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
   FILE *file;
   unsigned int servChecksum;
   unsigned int clntChecksum;
-  int windowSize;
+  unsigned int windowSize;
 
   /* Test for correct number of arguments */
   if (argc != 4)
@@ -81,6 +81,15 @@ int main(int argc, char *argv[])
   else
     printf("Sent request for file '%s' from %s:%d\n", fileName, servIP, servPort);
 
+  if (!strcmp(fileName, "EXIT"))
+  {
+    printf("Closing client.\n");
+    close(sock);
+    free(fileName);
+    free(buffer);
+    exit(0);
+  }
+
   /*Receive a response*/
   fromSize = sizeof(fromAddr);
   recvfrom(sock, buffer, SEGSIZE, 0, (struct sockaddr *)&fromAddr, &fromSize);
@@ -97,7 +106,7 @@ int main(int argc, char *argv[])
 
     /* send window size to server */
     printf("Sending window size to server\n");
-    if (sendto(sock, fileName, strlen(fileName), 0, (struct sockaddr *)&servAddr, sizeof(servAddr)) != strlen(fileName))
+    if (sendto(sock, &windowSize, sizeof(unsigned int), 0, (struct sockaddr *)&servAddr, sizeof(servAddr)) != sizeof(windowSize))
       DieWithError("send() sent a different number of bytes than expected");
     printf("Window size sent.\n");
 

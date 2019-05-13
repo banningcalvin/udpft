@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     unsigned int checksum;       /* sum of bytes of entire file. used for final validation  */
     float probability;           /* probability for biterror */
     int EOFreached;              /* 1 if EOF reached, 0 if not reached */
-    int windowSize;              /* window size, set by sender */
+    unsigned int windowSize;     /* window size, set by sender */
 
     /* Test for correct number of arguments */
     if (argc != 3)
@@ -103,15 +103,18 @@ int main(int argc, char *argv[])
 
     for (;;)
     { /* run until break */
-        /* blank the buffers */
+        /* reset the buffers */
         blankBuffer(buffer, SEGSIZE);
         blankBuffer(filePath, SEGSIZE);
-
         strcpy(filePath, "./ServerFiles/");
 
         /* Block until receive message from a client */
         if ((recvMsgSize = recvfrom(sock, buffer, SEGSIZE, 0, (struct sockaddr *)&clntAddr, &cliAddrLen)) < 0)
             DieWithError("recvfrom() failed");
+
+        /* exit on EXIT message */
+        if (!strcmp(buffer, "EXIT"))
+            break;
 
         printf("Handling client %s\n", inet_ntoa(clntAddr.sin_addr));
 
@@ -124,7 +127,11 @@ int main(int argc, char *argv[])
             if (sendto(sock, "200 - FILE FOUND", strlen("200 - FILE FOUND"), 0, (struct sockaddr *)&clntAddr, sizeof(clntAddr)) != strlen("200 - FILE FOUND"))
                 DieWithError("sendto() sent a different number of bytes than expected");
             else
-            { /* 200 sent to client. Now send the file */
+            { /* 200 sent to client. Now send the file after getting the window size */
+
+                recvfrom(sock, &windowSize, sizeof(unsigned int), 0, (struct sockaddr *)&clntAddr, &cliAddrLen);
+                printf("Window size recieved from client: %d\n", windowSize);
+
                 file = fopen(filePath, "r");
                 printf("'%s' opened. Preparing to buffer and send.\n", filePath);
 
