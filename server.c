@@ -13,7 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define SEGSIZE 255   /* Maximum data segment size */
+#define SEGSIZE 255 /* Maximum data segment size */
 
 
 
@@ -25,6 +25,7 @@ void blankBuffer(char* buffer, int len) {
   for(int i = 0; i < len; i++)
     buffer[i] = '\0';
 }
+
 
 /* Fills buffer b of length len with data from the filepointer file */
 /* returns 1 if EOF reached, 0 otherwise */
