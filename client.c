@@ -16,6 +16,12 @@ void DieWithError(char *errorMessage);              /* Error handling function *
 unsigned int calculateChecksum(char *path);         /* Checksum calculator */
 unsigned int calculateStringChecksum(char *buffer); /* String checksum calculator */
 
+struct message
+{
+    char data[SEGSIZE];
+    unsigned int checksum;
+};
+
 /* Sets fileName */
 void setFileName(char *fileName)
 {
