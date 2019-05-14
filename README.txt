@@ -80,9 +80,9 @@ There are two testing files included, constitution.txt and example.txt, which
 are 44KB and 45 bytes, respectively. Because these files sent so fast, very
 large files (which are not included because of their size) were used in the
 test graphed with gnuplot for part 3.
-The filesize graph used a windowsize of size 1 and error probability of 0.
-It can be seen in filesizeplot.png.
-The errorprob plot used a filesize of 20MB and window size of 1.
-It can be seen in errorprobplot.png.
-The windowsize plot uses a filesize of 20mb and errorprob of .1.
-It can be seen in windowsizeplot.png.
+>>>The filesize graph used a windowsize of size 1 and error probability of 0.
+     It can be seen in filesizeplot.png.
+>>>The errorprob plot used a filesize of 20MB and window size of 1.
+     It can be seen in errorprobplot.png.
+>>>The windowsize plot uses a filesize of 20mb and errorprob of .1.
+     It can be seen in windowsizeplot.png.

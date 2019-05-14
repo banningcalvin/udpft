@@ -164,19 +164,18 @@ int main(int argc, char *argv[])
                     /* EOF reached. Send and break */
                     if (prepBuffer(file, buffer, SEGSIZE))
                     {
-                        /*build packet, then send packet */
-
-                        /* if biterror, send bad packet */
-                        if (hasError(probability))
-                        {
-                            /*this packet is a biterror*/
-                        }
-
                         sendto(sock, buffer, SEGSIZE, 0, (struct sockaddr *)&clntAddr, sizeof(clntAddr));
                         EOFreached = 1;
                     }
                     else
                     { /* send data as normal */
+                        /*build packet, then send packet */
+                        /* if biterror, send bad packet */
+                        if (hasError(probability))
+                        {
+                            /*this packet is a biterror*/
+                            sendto(sock, buffer, SEGSIZE, 0, (struct sockaddr *)&clntAddr, sizeof(clntAddr));
+                        }
                         sendto(sock, buffer, SEGSIZE, 0, (struct sockaddr *)&clntAddr, sizeof(clntAddr));
                     }
                 }
@@ -186,6 +185,7 @@ int main(int argc, char *argv[])
                 printf("Getting ready to send checksum\n");
                 checksum = calculateChecksum(filePath);
                 sendto(sock, &checksum, sizeof(unsigned int), 0, (struct sockaddr *)&clntAddr, sizeof(clntAddr));
+                printf("Checksum sent.\n");
             }
         }
         else
@@ -195,6 +195,7 @@ int main(int argc, char *argv[])
             if (sendto(sock, "404 - FILE NOT FOUND", strlen("404 - FILE NOT FOUND"), 0, (struct sockaddr *)&clntAddr, sizeof(clntAddr)) != strlen("404 - FILE NOT FOUND"))
                 DieWithError("sendto() sent a different number of bytes than expected");
         }
+        printf("Ready to send next file.\n");
     }
 
     printf("Closing socket.\n");

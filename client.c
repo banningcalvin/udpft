@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
             blankBuffer(buffer, SEGSIZE + 1);
             recvfrom(sock, buffer, SEGSIZE, 0, (struct sockaddr *)&fromAddr, &fromSize);
 
-            /* verify packet */
+            /* verify packet, send ack if valid or nak if invalid */
 
             fputs(buffer, file);
             if (buffer[SEGSIZE - 1] == '\0') /* This segment had null bytes, EOF was reached */
