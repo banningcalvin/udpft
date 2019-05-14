@@ -1,4 +1,9 @@
 /* Networks Homework 2 - Calvin Banning */
+/* Uses go-back-n with a windowsize dictated by the client */
+/* and a biterror probability chosen by the server to simulate */
+/* real-world conditions for reliable data transfer over udp */
+
+!!!~ READ THIS ENTIRE FILE BEFORE RUNNING ~!!!
 
 ========================
 =LIST OF RELEVANT FILES=
@@ -9,6 +14,9 @@ DieWithError.c - runs perror and exits with error code.
 server.c - server source code file.
 client.c - client source code file.
 makefile - makefile.
+filesize.dat - timing data for gnuplot graphs with filesize being the variable
+windowsize.dat - timing data for gnuplot graphs with windowsize being the variable
+errorprob.dat - timing data for gnuplot graphs with error probability being the variable
 ClientFiles/ - Subdirectory for holding the downloaded file.
 	        The file is named download.txt.
 ServerFiles/ - Subdirectory for files to be uploaded by the server.
@@ -64,3 +72,17 @@ None.
    by the server which validates the file. You can also use the diff program
    to prove that download.txt is the same as the file which you requested from
    the server.
+
+===============
+=TESTING NOTES=
+===============
+There are two testing files included, constitution.txt and example.txt, which
+are 44KB and 45 bytes, respectively. Because these files sent so fast, very
+large files (which are not included because of their size) were used in the
+test graphed with gnuplot for part 3.
+The filesize graph used a windowsize of size 1 and error probability of 0.
+It can be seen in filesizeplot.png.
+The errorprob plot used a filesize of 20MB and window size of 1.
+It can be seen in errorprobplot.png.
+The windowsize plot uses a filesize of 20mb and errorprob of .1.
+It can be seen in windowsizeplot.png.

@@ -16,10 +16,18 @@ void DieWithError(char *errorMessage);              /* Error handling function *
 unsigned int calculateChecksum(char *path);         /* Checksum calculator */
 unsigned int calculateStringChecksum(char *buffer); /* String checksum calculator */
 
+/* struct representing the packets to be sent, contains a checksum and data */
 struct message
 {
     char data[SEGSIZE];
     unsigned int checksum;
+};
+/* acks are distinct. they have an int which is 0 if everything is ok, */
+/* and a sequence number */
+struct ackmsg
+{
+    int isack;
+    int seq;
 };
 
 /* Sets fileName */
@@ -50,6 +58,7 @@ int main(int argc, char *argv[])
     unsigned int servChecksum;
     unsigned int clntChecksum;
     unsigned int windowSize;
+    struct message msg;
 
     /* Test for correct number of arguments */
     if (argc != 4)

@@ -15,10 +15,17 @@
 
 #define SEGSIZE 255 /* Maximum data segment size */
 
+/* struct representing the packets to be sent, contains a checksum and data */
 struct message
 {
     char data[SEGSIZE];
     unsigned int checksum;
+};
+/* acks are distinct. they have an int which is 0 if everything is ok, */
+/* and a sequence number */
+struct ackmsg
+{
+    int isack;
 };
 
 void DieWithError(char *errorMessage);              /* Error handling function */
@@ -78,6 +85,7 @@ int main(int argc, char *argv[])
     unsigned int windowSize;     /* window size, set by sender */
     unsigned int seq;            /* sequence number of current packet */
     unsigned int ack;            /* ack number */
+    struct message msg;          /*message struct*/
 
     /* Test for correct number of arguments */
     if (argc != 3)
@@ -142,10 +150,12 @@ int main(int argc, char *argv[])
                 printf("Window size recieved from client: %d\n", windowSize);
 
                 file = fopen(filePath, "r");
+
                 printf("'%s' opened. Preparing to buffer and send.\n", filePath);
 
                 /* File transfer until break*/
                 EOFreached = 0;
+                seq = 0;
                 while (!EOFreached)
                 {
 
@@ -154,6 +164,14 @@ int main(int argc, char *argv[])
                     /* EOF reached. Send and break */
                     if (prepBuffer(file, buffer, SEGSIZE))
                     {
+                        /*build packet, then send packet */
+
+                        /* if biterror, send bad packet */
+                        if (hasError(probability))
+                        {
+                            /*this packet is a biterror*/
+                        }
+
                         sendto(sock, buffer, SEGSIZE, 0, (struct sockaddr *)&clntAddr, sizeof(clntAddr));
                         EOFreached = 1;
                     }
